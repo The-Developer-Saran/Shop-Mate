@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
     View,
     Text,
@@ -15,6 +15,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AntDesign from '@react-native-vector-icons/ant-design';
 import Ionicons from '@react-native-vector-icons/ionicons';
+import NetInfo from '@react-native-community/netinfo';
 
 import { useProductsViewModel } from '../../viewmodels/ProductsViewModel';
 import { BannerItem } from '../components/BannerItem';
@@ -34,10 +35,9 @@ const PageIndicator = ({ current, total }) => (
 );
 
 const ProductScreen = () => {
-    const { products, loading, error, retry } = useProductsViewModel();
 
+    const { products, loading, error, retry } =  useProductsViewModel();
     const [pageIndex, setPageIndex] = useState(0);
-
     const itemsPerPage = getItemsPerPage(pageIndex);
 
     const totalPages = useMemo(() => {

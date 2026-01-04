@@ -22,7 +22,7 @@ const Tab = createBottomTabNavigator();
 
 function CustomTabBar({ state, navigation }) {
   const { width } = Dimensions.get('window');
-const tabWidth = width / 5;
+  const tabWidth = width / 5;
   const insets = useSafeAreaInsets();
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -41,6 +41,7 @@ const tabWidth = width / 5;
     { icon: 'cart', screen: 'Home' },
     { icon: 'heart', screen: 'Wallet' },
     { icon: 'gift', screen: 'Share' },
+    { icon: 'ticket', screen: 'ticket' },
   ];
 
   return (
@@ -52,38 +53,36 @@ const tabWidth = width / 5;
 
       <View style={styles.popupContainer}>
         {menuItems.map((item, index) => {
-          const translateY = animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, -80],
-          });
+          const angle =
+            (-130 + index * (90 / (menuItems.length - 1))) * (Math.PI / 180);
+          const radius = 100;
 
           const translateX = animation.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, 70 * (index + 1)],
+            outputRange: [0, radius * Math.cos(angle)],
+          });
+
+          const translateY = animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, radius * Math.sin(angle)],
           });
 
           const scale = animation;
 
           return (
             <Animated.View
+              key={index}
               style={[
-                styles.popupRow,
+                styles.popupButton,
                 {
-                  transform: [{ translateY }, { scale }],
+                  position: 'absolute',
+                  transform: [{ translateX }, { translateY }, { scale }],
                 },
               ]}
             >
-              {menuItems.map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={styles.popupButton}
-                  onPress={() => {
-                    toggleMenu();
-                  }}
-                >
-                  <Ionicons name={item.icon} size={22} color="#6B46C1" />
-                </TouchableOpacity>
-              ))}
+              <TouchableOpacity onPress={() => toggleMenu()}>
+                <Ionicons name={item.icon} size={22} color="#6B46C1" />
+              </TouchableOpacity>
             </Animated.View>
           );
         })}
@@ -125,19 +124,20 @@ const tabWidth = width / 5;
         else if (route.name === 'Profile') iconName = 'person';
 
         const extraStyle =
-  route.name === 'Wallet'
-    ? { transform: [{ translateX: -20 }] }
-    : null;
-    const extraStyle1 =
-  route.name === 'Share'
-    ? { transform: [{ translateX: 20 }] }
-    : null;
+          route.name === 'Wallet' ? { transform: [{ translateX: -20 }] } : null;
+        const extraStyle1 =
+          route.name === 'Share' ? { transform: [{ translateX: 20 }] } : null;
 
         return (
           <TouchableOpacity
             key={index}
             onPress={onPress}
-            style={[styles.tabButton, { width: tabWidth}, extraStyle, extraStyle1]}
+            style={[
+              styles.tabButton,
+              { width: tabWidth },
+              extraStyle,
+              extraStyle1,
+            ]}
           >
             <Ionicons
               name={isFocused ? iconName : `${iconName}-outline`}
